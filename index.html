@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+    font-family: Avenir;
+    margin: 0 auto;
+    padding: 0;
+    overflow-y: scroll!important;
+}
+
+.background {
+    fill: white;
+    pointer-events: all;
+}
+
+.glyphicon {
+    font-size: 25px;
+    color: #777;
+}
+
+.map-layer {
+    fill: #fff;
+    stroke: white;
+    stroke-width: 0.5;
+}
+
+.effect-layer {
+    pointer-events: none;
+}
+
+text {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+text.big-text {
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.effect-layer text,
+text.dummy-text {
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    text-align: center;
+    transform: translate(87%, 0);
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.bar rect {
+    shape-rendering: crispEdges;
+}
+
+.bar text {
+    fill: #999999;
+}
+</style>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <!-- Navigation -->
+    <!-- Off Canvas Menu -->
+    <nav id="offCanvasMenu" class="navmenu navmenu-default navmenu-fixed-right offcanvas" role="navigation">
+        <a class="navmenu-brand" href="./index.html"><b>ประเทศไทย 0.4</b></a>
+        <ul class="nav navmenu-nav">
+            <li><a href="#intro">รายได้</a></li>
+            <li><a href="#first">หนี้สิน</a></li>
+            <li><a href="#second">About</a></li>
+        </ul>
+    </nav>
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation" style="">
+        <div class="container">
+            <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target="#offCanvasMenu" data-canvas="body">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand page-scroll" href="#intro">ประเทศไทย 0.4</a>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden active">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+                    <li class="">
+                        <a href="#intro">รายได้</a>
+                    </li>
+                    <li class="">
+                        <a href="#first">หนี้สิน</a>
+                    </li>
+                    <li class="">
+                        <a href="#second">เกี่ยวกับ</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- Intro Section -->
+    <section id="intro" class="intro-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-1"></div>
+                <div class="col-xs-6">
+                    <svg id="map-canvas-income"></svg>
+                </div>
+                <div class="col-xs-4">
+                    <div class="row">
+                        <h3>รายได้แต่ละจังหวัดต่างกันมากแค่ไหน?</h3>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-xs-1"></div>
+                            <label class="col-xs-2 text-right" style="font-size: 16px; padding-top:5px; padding-right:5px;"> เลือกปี </label>
+                            <div class="col-xs-4">
+                                <select class="form-control" name="year-income" onchange="updateIncome();">
+                                    <option value="9" selected="selected">2558</option>
+                                    <option value="8">2556</option>
+                                    <option value="7">2554</option>
+                                    <option value="6">2552</option>
+                                    <option value="5">2550</option>
+                                    <option value="4">2549</option>
+                                    <option value="3">2547</option>
+                                    <option value="2">2545</option>
+                                    <option value="1">2543</option>
+                                    <option value="0">2541</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-2">
+                                <input id="play-button-income" type="button" class="btn btn-default" style="width: 70px !important;" value="เล่น" onclick="loopAnimationIncome()">
+                            </div>
+                            <div class="col-xs-2"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <hr>
+                        <p id="country-avg-income" class="text-center"></p>
+                        <svg id="histogram-income"></svg>
+                        <p class="text-center">จังหวัดที่มีรายได้เฉลี่ยต่อเดือนต่อครัวเรือน </p>
+                        <label class="radio-inline">
+                            <input type="radio" id="max-income" name="optradio" onclick="getMaxIncome()">มากที่สุด
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="min-income" name="optradio" onclick="getMinIncome()">น้อยที่สุด
+                        </label>
+                        <div id="dynamic-table-income" style="height:200px; overflow-y:auto; padding-top: 10px; padding-left: 40px; padding-right: 40px;"></div>
+                    </div>
+                </div>
+                <div class="col-xs-1"></div>
+            </div>
+            <div class="nextSection">
+                <a class="page-scroll" href="#first">
+                    <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- First Section -->
+    <section id="first" class="first-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-1"></div>
+                <div class="col-xs-4">
+                    <div class="row">
+                        <h3>คนไทยมีหนี้สินเพิ่มขึ้นรึเปล่า?</h3>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-xs-1"></div>
+                            <label class="col-xs-2 text-right" style="font-size: 16px; padding-top:5px; padding-right:5px;"> เลือกปี </label>
+                            <div class="col-xs-4">
+                                <select class="form-control" name="year-debt" onchange="updateDebt();">
+                                    <option value="9" selected="selected">2558</option>
+                                    <option value="8">2556</option>
+                                    <option value="7">2554</option>
+                                    <option value="6">2552</option>
+                                    <option value="5">2550</option>
+                                    <option value="4">2549</option>
+                                    <option value="3">2547</option>
+                                    <option value="2">2545</option>
+                                    <option value="1">2543</option>
+                                    <option value="0">2541</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-2">
+                                <input id="play-button-debt" type="button" class="btn btn-default" style="width: 70px !important;" value="เล่น" onclick="loopAnimationDebt()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <hr>
+                        <div id="country-avg-debt"></div>
+                        <svg id="histogram-debt"></svg>
+                        <p class="text-center">จังหวัดที่มีหนี้สินต่อเดือนต่อครัวเรือน </p>
+                        <label class="radio-inline">
+                            <input type="radio" id="max-debt" name="optradio" onclick="getMaxDebt()">มากที่สุด
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="min-debt" name="optradio" onclick="getMinDebt()">น้อยที่สุด
+                        </label>
+                        <div id="dynamic-table-debt" style="height:200px; overflow-y:auto; padding-top: 10px; padding-left: 40px; padding-right: 40px;"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <svg id="map-canvas-debt"></svg>
+                </div>
+                <div class="col-xs-1"></div>
+            </div>
+            <div class="nextSection">
+                <a class="page-scroll" href="#second">
+                    <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- Second Section -->
+    <section id="second" class="second-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>เกี่ยวกับ</h1>
+                </div>
+            </div>
+            <div class="col-xs-8 col-xs-offset-2">
+                <p>ข้อมูลชุดนี้นำมาจาก <a href="http://www.nso.go.th/sites/2014"> สำนักงานสถิติแห่งชาติ </a> ที่ได้จับเก็บสถิติจำนวนรายได้และหนี้สินต่อครัวเรือนตั้งแต่ปี พ.ศ.2541 - พ.ศ.2558 จากข้อมูลรายได้เฉลี่ยนต่อเดือนต่อครัวเรื่อน คนไทยมีรายได้เฉลี่ยเพิ่มมากขึ้นเรื่อยๆ แต่รายได้ยังกระจุกอยู่แค่ในบางพื่นที่ เช่น ภาคกลาง ภาคตะวันออก และ ภาคใต โดยที่ ภาคเหนือ และ ภาคตะวันออกเฉียงเหนือ มีรายได้เฉลี่ยต่ำกว่าภาคอื่นๆ ในแทบทุกปีที่สำรวจ ส่วนจากข้อมูลหนี้สิน จะเห็นว่าคนไทยมีจำนวนหนี้สินเพิ่มขึ้นเรื่อยๆ แต่ว่ากระจายไปโดยรอบ โดย กรุงเทพ และ ปริมณฑล เป็นพื่นที่ที่มีหนี้สินมากที่สุด
+                    <br>
+                    <p> Visualization ชุดนี้ทำเล่นๆโดย <a href="https://github.com/mikephul"> Mike Phulsuksombati </a> เพื่อเรียนรู้ library <a href="https://d3js.org/">D3.js</a> จึงอาจจะขาดตกบกพร่องในหลายส่วน ต้องขออภัยล่วงหน้ามาตรงนี้ ส่วนแผนที่ประเทศไทย ได้จาก <a href="https://gist.github.com/kristw/7fbf031e3205a8a453a8"> Krist Wongsuphasawat</a>
+                    </p>
+            </div>
+    </section>
+    <!-- d3 -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <!-- jquery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.tipsy.js"></script>
+    <link href="/css/tipsy.css" rel="stylesheet" type="text/css" />
+    <!-- bootstrap -->
+    <script src="/js/bootstrap.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <!-- jasny -->
+    <script src="/js/jasny-bootstrap.min.js"></script>
+    <link href="/css/jasny-bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- scrolling -->
+    <script src="/js/scrolling-nav.js"></script>
+    <link href="/css/scrolling-nav.css" rel="stylesheet" type="text/css" />
+    <!-- plot -->
+    <script src="/js/write-table.js"></script>
+    <script src="/js/plot-histogram.js"></script>
+    <script src="/js/draw-map.js"></script>
+    <!-- main -->
+    <link href="/css/main.css" rel="stylesheet" type="text/css" />

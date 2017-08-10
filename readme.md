@@ -1,0 +1,1 @@
+Credit [Krist Wongsuphasawat](https://github.com/kristw) for his awesome starter code of Thailand map!
